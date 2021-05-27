@@ -361,3 +361,5 @@ MigrationBackup/
 *.filters
 *.user
 *.sln
+pch.cpp
+pch.h
