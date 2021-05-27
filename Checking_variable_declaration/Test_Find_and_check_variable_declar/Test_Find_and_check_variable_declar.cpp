@@ -6,12 +6,123 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestFindandcheckvariabledeclar
 {
-	TEST_CLASS(TestFindandcheckvariabledeclar)
+	TEST_CLASS(TestFindandcheckvariabledeclaration)
 	{
 	public:
-		
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(variable_declared)
 		{
+			vector<string> names_variable = { "abc" };
+			vector<string> text =
+			{
+				"int main()"
+				"{"
+				"	 int abc = 0;"
+				"	 return 0;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "abc" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(variable_declared_as_function_argument)
+		{
+			vector<string> names_variable = { "text" };
+			vector<string> text =
+			{
+				"int Find_var(char text[5][5])"
+				"{"
+				"	 return 0;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "text" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(function_declared)
+		{
+			vector<string> names_variable = { "Find_var", "abc" };
+			vector<string> text =
+			{
+				"int Find_var(char text[5][5])"
+				"{"
+				"	 int abc = 0;"
+				"	 return 0;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "abc" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(union_enum_structure_declared)
+		{
+			vector<string> names_variable = { "student", "chill", "poas" };
+			vector<string> text =
+			{
+				"struct student"
+				"{"
+				"	int n;"
+				"	int m;"
+				"}"
+				"enum chill"
+				"{"
+				"	 DOG,"
+				"	 CAT"
+				"}"
+				"union poas"
+				"{"
+				"	  int i;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "student", "chill", "poas" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(variable_name_is_incorrect)
+		{
+			vector<string> names_variable = { "tmp" };
+			vector<string> text =
+			{
+				"int main()"
+				"{"
+				"	 int temp = 0;"
+				"	 return 0;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(declarer_is_incorrect)
+		{
+			vector<string> names_variable = { "tmp" };
+			vector<string> text =
+			{
+				"int main()"
+				"{"
+				"	 tint temp = 0;"
+				"	 return 0;"
+				"}"
+			};
+			vector<string> exp_names_variable = { "" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
 		}
 	};
 }
