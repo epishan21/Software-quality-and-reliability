@@ -50,3 +50,19 @@ string Read_file(char* Path_C, char* Path_txt);
     \param[in] Strings_with_variable[MAX_NUMBER_LINES][MAX_LENGTH_LINE] - Массив строк содержащий строки с искомой переменной, если они объявлены
 */
 void Write_to_file(vector<string> Strings_with_variable);
+
+class Exception :public exception
+{
+public:
+	Exception(const char* msg, string errorCode) :exception(msg)
+	{
+		this->errorCode = errorCode;
+	}
+	string getErrorCode()
+	{
+		return errorCode;
+	}
+
+private:
+	string errorCode;
+};
