@@ -239,6 +239,17 @@ namespace TestCheckdeclaration
 
 			Assert::AreEqual(exp_name_variable, real_name_variable);
 		}
+
+		TEST_METHOD(declarer_is_incorrect_at_beginning)
+		{
+			string data_type = "int";
+			string strings_with_variable = { "tint tmp = 0;" };
+			string exp_name_variable = "";
+
+			string real_name_variable = Check_declaration(strings_with_variable, exp_name_variable);
+
+			Assert::AreEqual(exp_name_variable, real_name_variable);
+		}
 	};
 }
 

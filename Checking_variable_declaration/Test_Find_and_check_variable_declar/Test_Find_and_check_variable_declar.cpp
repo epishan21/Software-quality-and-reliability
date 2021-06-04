@@ -14,10 +14,10 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "abc" };
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 int abc = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 int abc = 0;",
+				"	 return 0;",
 				"}"
 			};
 			vector<string> exp_names_variable = { "abc" };
@@ -32,9 +32,9 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "text" };
 			vector<string> text =
 			{
-				"int Find_var(char text[5][5])"
-				"{"
-				"	 return 0;"
+				"int Find_var(char text[5][5])",
+				"{",
+				"	 return 0;",
 				"}"
 			};
 			vector<string> exp_names_variable = { "text" };
@@ -49,10 +49,10 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "Find_var", "abc" };
 			vector<string> text =
 			{
-				"int Find_var(char text[5][5])"
-				"{"
-				"	 int abc = 0;"
-				"	 return 0;"
+				"int Find_var(char text[5][5])",
+				"{",
+				"	 int abc = 0;",
+				"	 return 0;",
 				"}"
 			};
 			vector<string> exp_names_variable = { "abc" };
@@ -67,19 +67,19 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "student", "chill", "poas" };
 			vector<string> text =
 			{
-				"struct student"
-				"{"
-				"	int n;"
-				"	int m;"
-				"}"
-				"enum chill"
-				"{"
-				"	 DOG,"
-				"	 CAT"
-				"}"
-				"union poas"
-				"{"
-				"	  int i;"
+				"struct student",
+				"{",
+				"	int n;",
+				"	int m;",
+				"}",
+				"enum chill",
+				"{",
+				"	 DOG,",
+				"	 CAT",
+				"}",
+				"union poas",
+				"{",
+				"	  int i;",
 				"}"
 			};
 			vector<string> exp_names_variable = { "student", "chill", "poas" };
@@ -94,13 +94,13 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "tmp" };
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 int temp = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 int temp = 0;",
+				"	 return 0;",
 				"}"
 			};
-			vector<string> exp_names_variable = { "" };
+			vector<string> exp_names_variable = { };
 
 			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
 
@@ -112,13 +112,13 @@ namespace TestFindandcheckvariabledeclar
 			vector<string> names_variable = { "tmp" };
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 tint temp = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 tint temp = 0;",
+				"	 return 0;",
 				"}"
 			};
-			vector<string> exp_names_variable = { "" };
+			vector<string> exp_names_variable = { };
 
 			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
 

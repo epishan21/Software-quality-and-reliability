@@ -14,10 +14,10 @@ namespace TestFindvariable
 			string name_variable = "abc";
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 int abc = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 int abc = 0;",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "	 int abc = 0;";
@@ -32,10 +32,10 @@ namespace TestFindvariable
 			string name_variable = "abc";
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 int abcd = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 int abcd = 0;",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "";
@@ -50,10 +50,10 @@ namespace TestFindvariable
 			string name_variable = "bab";
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"	 int alibaba = 0;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"	 int alibaba = 0;",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "";
@@ -68,9 +68,9 @@ namespace TestFindvariable
 			string name_variable = "Find_var";
 			vector<string> text =
 			{
-				"int Find_var(char text[5][5])"
-				"{"
-				"	 return 0;"
+				"int Find_var(char text[5][5])",
+				"{",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "int Find_var(char text[5][5])";
@@ -85,10 +85,10 @@ namespace TestFindvariable
 			string name_variable = "text";
 			vector<string> text =
 			{
-				"int Find_var(char text[5][5])"
-				"{"
-				"    text[5][5]={“”};"
-				"	 return 0;"
+				"int Find_var(char text[5][5])",
+				"{",
+				"    text[5][5]={“”};",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "int Find_var(char text[5][5])";
@@ -103,13 +103,13 @@ namespace TestFindvariable
 			string name_variable = "abc";
 			vector<string> text =
 			{
-				"int main()"
-				"{"
-				"    abc++;"
-				"	 return 0;"
+				"int main()",
+				"{",
+				"   abc++;",
+				"	return 0;",
 				"}"
 			};
-			string exp_string_with_variable = "abc++;";
+			string exp_string_with_variable = "   abc++;";
 
 			string real_string_with_variable = Find_variable(text, name_variable);
 
@@ -121,10 +121,10 @@ namespace TestFindvariable
 			string name_variable = "Find_var";
 			vector<string> text =
 			{
-				"int Find_var(char text[10][10])"
-				"{"
-				"    int Find_var;"
-				"	 return 0;"
+				"int Find_var(char text[5][5])",
+				"{",
+				"    int Find_var;",
+				"	 return 0;",
 				"}"
 			};
 			string exp_string_with_variable = "int Find_var(char text[5][5])";
