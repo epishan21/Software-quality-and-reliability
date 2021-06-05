@@ -73,7 +73,7 @@ namespace TestFindvariable
 				"	 return 0;",
 				"}"
 			};
-			string exp_string_with_variable = "int Find_var(char text[5][5])";
+			string exp_string_with_variable = "";
 
 			string real_string_with_variable = Find_variable(text, name_variable);
 
@@ -127,7 +127,25 @@ namespace TestFindvariable
 				"	 return 0;",
 				"}"
 			};
-			string exp_string_with_variable = "int Find_var(char text[5][5])";
+			string exp_string_with_variable = "    int Find_var;";
+
+			string real_string_with_variable = Find_variable(text, name_variable);
+
+			Assert::AreEqual(exp_string_with_variable, real_string_with_variable);
+		}
+
+		TEST_METHOD(variable_as_argument_of_function_and_function_have_same_name)
+		{
+			string name_variable = "Find_var";
+			vector<string> text =
+			{
+				"int Find_var(char Find_var[5][5])",
+				"{",
+				"    int tint;",
+				"	 return 0;",
+				"}"
+			};
+			string exp_string_with_variable = "int Find_var(char Find_var[5][5])";
 
 			string real_string_with_variable = Find_variable(text, name_variable);
 

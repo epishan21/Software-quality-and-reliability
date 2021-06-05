@@ -114,7 +114,7 @@ namespace TestFindandcheckvariabledeclar
 			{
 				"int main()",
 				"{",
-				"	 tint temp = 0;",
+				"	 tint tmp = 0;",
 				"	 return 0;",
 				"}"
 			};
