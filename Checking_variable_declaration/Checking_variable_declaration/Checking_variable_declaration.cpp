@@ -5,8 +5,76 @@ int main()
     return 0;
 }
 
+vector<string> Read_file(vector<string> text, string path, string exp_file_extension)
+{
+
+    string text_in;          // Текст получаемый из файла
+    vector<string> text_out; // Полученное содержимое файла 
+
+    string file_extension;   // Расширение файла
+
+    // Считывание содержимого из файла
+    ifstream readFile(path); // Открыть файл для чтения
+
+    if (exp_file_extension == ".c")
+    {
+        // У файла с текстом программы отсутствует расширение
+        if (path.find(".c") == string::npos)
+        {
+            throw Exception("Отсутствует расширение у файла с текстом программы. Файл должен иметь расширение .c", "1");
+        }
+        // Получение расширения файла
+        else
+        {
+            file_extension = path.substr(path.find_last_of('.'));
+        }
+
+        // Было неверно указано расширение файла с текстом программы
+        if (exp_file_extension != file_extension)
+        {
+            throw Exception("Неверно указано расширение файла с текстом программы. Файл должен иметь расширение .c", "3");
+        }
+    }
+    else if (file_extension == ".txt")
+    {
+        // У файла с именами переменных отсутствует расширение
+        if (path.find(".txt") == string::npos)
+        {
+            throw Exception("Отсутствует расширение у файла с именами переменных. Файл должен иметь расширение .txt", "2");
+        }
+        // Получение расширения файла
+        else
+        {
+            file_extension = path.substr(path.find_last_of('.'));
+        }
+
+        // Было неверно указано расширение файла с именами переменных
+        if (exp_file_extension != file_extension)
+        {
+            throw Exception("Неверно указано расширение файла с именами переменных. Файл должен иметь расширение .txt", "4");
+        }
+    }
+
+    if (!readFile.is_open())
+    {
+        throw Exception("Неверно указан файл с входными данными. Возможно файл не существует", "5");
+    }
+    // Непосредственно считывание данных из файла
+    else
+    {
+        while (getline(readFile, text_in))
+        {
+            text_out.push_back(text_in);
+        }
+    }
+    readFile.close(); // Закрытие файла   
+
+    text = text_out;
+    return text; // Полученное содержимое файла 
+}
+
 // Проверить наличие и корректность текста на языке С и имен переменных
-vector<string> Spell_check(vector<string> text)
+vector<string> Spell_check(vector<string> text, bool type)
 {
     return { "" };
 }
@@ -221,3 +289,43 @@ string Check_declaration(string string_with_variable, string name_variable)
     return name_checked_variable;
 }
 
+void Write_to_file(vector<string> result, string path_out)
+{
+    string file_extension; // Расширение файла
+    const string exp_file_extension = ".txt"; // Ожидаемое расширение файла
+
+    // У файла отсутствует расширение
+    if (path_out.find(".txt") == string::npos)
+    {
+        throw Exception("Отсутствует расширение у выходного файла", "6");
+    }
+    // Получение расширения файла
+    else
+    {
+        file_extension = path_out.substr(path_out.find_last_of('.'));
+    }
+
+    // Было неверно указано расширение файла
+    if (exp_file_extension != file_extension)
+    {
+        throw Exception("Неверно указано расширение у выходного файла. Выходной файл должен иметь расширение .txt", "7");
+    }
+
+    // Запись результата работы программы в файл
+    ofstream write_to_file;
+    write_to_file.open(path_out);
+    if (!write_to_file.is_open()) // Неверный путь к файлу
+    {
+        throw Exception("Неверно указан файл с выходными данными. Возможно файл не существует", "8");
+    }
+    // Непосредственно запись результата работы программы в файл
+    else
+    {
+        for (int j = 0; j < result.size(); j++)
+        {
+            write_to_file << result[j];
+            write_to_file << "\n";
+        }
+    }
+    write_to_file.close(); // Закрытие файла
+}

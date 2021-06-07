@@ -6,6 +6,8 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <Windows.h>
 
 using namespace std;
 
@@ -34,22 +36,23 @@ vector<string> Find_and_check_variable_declaration(vector<string> text, vector<s
 
 
 /*! Проверка наличия и корректности текста на языке С и имен переменных
-    \param[in] text[2][MAX_NUMBER_LINES][MAX_LENGTH_LINE] - Текст на языке С и имен переменных
-    \param[out] text[2][MAX_NUMBER_LINES][MAX_LENGTЫH_LINE] - Если содержимое прошло проверку или Error если содержимое не соответсвует заданному формату
+    \param[in] text - Текст на языке С и имен переменных
+    \param[in] type - Текст или имена переменных
 */
-vector<string> Spell_check(vector<string> text);
+vector<string> Spell_check(vector<string> text, bool type);
 
 /*! Считывание входных данных с C и txt файла по заданному пользователем пути
-    \param[in] path_c - Путь расположения c файла
-    \param[in] path_txt - Путь расположения txt файла
-    \param[out] text[2][MAX_NUMBER_LINES][MAX_LENGTH_LINE] - Текст на языке С и названия переменных
+	\param[in] path - Путь расположения c файла
+	\param[in] file_extension - Расширение файла
+	\param[out] Text - Текст на языке С и названия переменных
 */
-string Read_file(char* path_c, char* path_txt);
+vector<string> Read_file(vector<string> text, string path, string file_extension);
 
 /*! Запись результата выполнения программы в txt файл
-    \param[in] strings_with_variable[MAX_NUMBER_LINES][MAX_LENGTH_LINE] - Массив строк содержащий строки с искомой переменной, если они объявлены
+	\param[in] Strings_with_variable - Массив строк содержащий строки с искомой переменной, если они объявлены
+	\param[in] path - Путь для записи
 */
-void Write_to_file(vector<string> strings_with_variable);
+void Write_to_file(vector<string> strings_with_variable, string path);
 
 class Exception :public exception
 {
