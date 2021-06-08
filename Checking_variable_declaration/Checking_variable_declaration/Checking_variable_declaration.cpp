@@ -13,9 +13,6 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
 
     string file_extension;   // Расширение файла
 
-    // Считывание содержимого из файла
-    ifstream readFile(path); // Открыть файл для чтения
-
     if (exp_file_extension == ".c")
     {
         // У файла с текстом программы отсутствует расширение
@@ -55,6 +52,8 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         }
     }
 
+    // Считывание содержимого из файла
+    ifstream readFile(path);  // Открыть файл для чтения
     if (!readFile.is_open())
     {
         throw Exception("Неверно указан файл с входными данными. Возможно файл не существует", "5");
@@ -76,6 +75,197 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
 // Проверить наличие и корректность текста на языке С и имен переменных
 vector<string> Spell_check(vector<string> text, bool type)
 {
+    string string_without_comment;
+    int size = text.size();
+    if (size == 0)
+    {
+        throw Exception("Отсутсвуют данные в файле с текстом программы. Код Ошибки: ", "14");
+    }
+    int k = 0;
+    // Удалить все функции  
+    string rus_letters = { "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" };
+
+    if (type == 0)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            int length = text[i].length();
+            // Убрать комментарий из строки               
+            int position_slash = text[i].find_first_of("/");
+            if (position_slash != -1)
+            {
+                string_without_comment = text[i].append(text[i], 0, position_slash);
+            }
+            else
+            {
+                string_without_comment = text[i];
+            }
+
+            if (length == 0)
+            {
+                k++;
+                if (k == size)
+                {
+                    throw Exception("Отсутсвуют данные в файле с текстом программы. Код Ошибки: ", "14");
+                }
+            }
+            else
+            {
+
+                if ((string_without_comment.find("#define") != -1) && ((string_without_comment.find(60) == -1) && (string_without_comment.find(34) == -1)))
+                {
+                    throw Exception("В тексте программы присутствуют макросы. Не вводите макросы. Код Ошибки: ", "13");
+                }
+
+                if (string_without_comment.find_first_of(rus_letters) != -1)// Проверить либо только на русские символы либо на все кроме английских и чисел и посторонних символов
+                {
+                    throw Exception("Введены недопустимые символы в тексте программы. Используйте латинский алфавит для записи. Код Ошибки: ", "9");
+                }                
+                              
+                if (string_without_comment.find(59) != -1)// Если в строке обнаржуенно 2 ; то ошибка (Сначала надо обнаружить первую а потом вырезать часть строки до первой ; и проверить еще раз)
+                {
+                    string_without_comment = string_without_comment.substr(string_without_comment.find(59) + 1); // Строка начинается с символа после первой ";"
+
+                    if (string_without_comment.find(59) != -1)
+                    {
+                        throw Exception("Некоторые элементарные инструкции записаны на одной строке. Вводите элементарные инструкции на разных строках. Код Ошибки: ", "11");
+                    }
+                }
+
+            }
+        }
+
+        int size = text.size(); // Количество строк в тексте
+        int index_close_bracket = 0; // Индекс закрывающейся скобки 
+        int index_open_bracket = 0; // Индекс открывающейся скобки 
+
+        // Проверить наличие закрывающейся скобки в каждой строке
+        for (int i = size - 1; i > 0; i--)
+        {
+            // Начать поиск закрывающейся скобки с конца
+            if (text[i].find('}') != -1)
+            {
+                // Если скобка закрывающаяся то найти парную ей открывающуюся
+                index_close_bracket = i;
+                index_open_bracket = i;
+
+                // Задать количество закрывающихся скобок без пары равным 1
+                int num_close_bracket_without_pair = 1;
+
+                // Пока не найдена парная открывающаяся скобка(количество закрывающихся скобок = 0)
+                while (num_close_bracket_without_pair != 0)
+                {
+                    // Перейти на строчку выше
+                    index_open_bracket--;
+                    {
+                        // Если текущая строка содержит открывающуюся скобку
+                        if (text[index_open_bracket].find('{') != -1)
+                        {
+                            // Уменьшить количество закрывающихся скобок без пары на 1
+                            num_close_bracket_without_pair--;
+                        }
+                        else if (text[index_open_bracket].find('}') != -1)  // Иначе если текущяя строка содержит закрывающуюся скобку
+                        {
+                            // Увеличить  количество закрывающихся скобок без пары на 1
+                            num_close_bracket_without_pair++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                continue;
+            }
+
+            index_open_bracket--; // Перейти на строку выше
+
+            // Проверить строки над открывающейся скобкой на наличие текста
+            int num_white_spaces_in_line = 0; // Количество пустых пробелов в строке
+
+            // Пока строка - пустая(т.е. \0 или с белыми пробелами)
+            for (int i = index_open_bracket; i > 0; i--)
+            {
+                int num_characters_in_line = text[i].length(); // Количество всех символов в строке
+                if (num_characters_in_line == 0)  // То есть строка пуста
+                {
+                    // Перейти на строчку выше
+                    index_open_bracket--;
+                }
+                else
+                {   // Посчитать пробелы
+                    for (int i = 0; i < num_characters_in_line; i++)
+                    {
+                        if ((text[index_open_bracket][i] == ' '))
+                            num_white_spaces_in_line++;
+                    }
+                    // Если строка состоит из белых пробелов
+                    if (num_white_spaces_in_line == num_characters_in_line)
+                    {
+                        // Перейти на строчку выше
+                        index_open_bracket--;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            // Удалить строки начиная с функции, заканчивая "}"
+            for (int i = index_open_bracket; i <= index_close_bracket; i++)
+            {
+                text[i].clear();
+            }
+        }
+
+        // Создать массив слов объявлений(int, char, double, float, string, bool)
+        vector<string> data_type = { "int", "char", "double", "float", "string", "bool" };
+
+        bool declarerand_incorrect = false; // Объявитель некорректен 
+
+        //Проверить есть ли любое из слов объявлений в строке
+        for (int j = 0; j < text.size(); j++)
+        {
+            for (int i = 0; i < data_type.size(); i++)
+            {
+                // Проверить корректность слова объявления, если нашлось совпадение         
+                if (text[j].find(data_type[i]) != -1)
+                {
+                    // Найти первое вхождение объявителя
+                    int position = text[j].find(data_type[i]);
+
+                    declarerand_incorrect = false;
+                    // Если объявитель начинается сначала строки или перед ним стоит пробел 
+                    if (!((position == 0) || (text[j][position - 1] == ' ') || (text[j][position - 1] == '\t')))
+                    {
+                        // Объявитель некорректен
+                        declarerand_incorrect = true;
+                    }
+
+                    // Если объявитель корректен
+                    if (declarerand_incorrect == false)
+                    {
+                        throw Exception("В тексте программы присутствуют глобальные переменные. Не вводите глобальные переменные. Код Ошибки: ", "12");
+                    }
+                }
+            }
+        }
+    }
+    else if (type == 1)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            if (size == 0)
+            {
+                throw Exception("Отсутсвуют данные в файле с именами переменных. Код Ошибки: ", "15");
+            }
+            if (text[i].find_first_of(rus_letters) != -1)
+            {
+                throw Exception("Введены недопустимые символы в названиях переменных. Используйте латинский алфавит для записи. Код Ошибки: ", "10");
+            }
+        }
+    }
+
     return { "" };
 }
 
@@ -226,7 +416,7 @@ string Check_declaration(string string_with_variable, string name_variable)
 
             declarerand_incorrect = false;
             // Если объявитель начинается сначала строки или перед ним стоит пробел или открывающаяся скобка
-            if ((position == 0) || (string_with_variable[position - 1] == ' ') || (string_with_variable[position - 1] == '('))
+            if ((position == 0) || (string_with_variable[position - 1] == ' ') || (string_with_variable[position - 1] == '(') || (string_with_variable[position - 1] == '\t'))
             {
                 // Строка начинается с объявителя
                 string_with_variable = string_with_variable.substr(position);
