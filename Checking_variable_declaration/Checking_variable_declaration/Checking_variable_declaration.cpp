@@ -11,9 +11,16 @@ int main()
     string file_extension_txt;  // Расширение файла с именами переменных
     const string exp_file_extension_txt = ".txt"; // Ожидаемое расширение файла с именами переменных
 
-    string path_c;   // Путь до файла с текстом = "D:\\LABSSSSSSSSSSSSSSSSSSS\\text.c";
-    string path_txt; // Путь до файла с именами переменных= "D:\\LABSSSSSSSSSSSSSSSSSSS\\names.txt";
-    string out_path; // Путь до файла с результатом = "D:\\LABSSSSSSSSSSSSSSSSSSS\\out.txt";
+    string path_c;   // Путь до файла с текстом           
+    string path_txt; // Путь до файла с именами переменных 
+    string out_path; // Путь до файла с результатом        
+
+    vector<string> text; // Текст программы
+    vector<string> names_variables; // Имена переменных
+
+    vector<string> error_message = {""}; // Ошибка, которая запишется в файл
+
+    bool type = 0; // Проверить текст программы на исключения 
 
     cout << "Введите путь до файла с расширением .С для считования текста программы: ";
     cin >> path_c;
@@ -24,25 +31,33 @@ int main()
     cout << "\nВведите путь до файла с расширением .txt в который будет записан результа: ";
     cin >> out_path;
 
-    vector<string> text; // Текст программы
-    text = Read_file(text, path_c, exp_file_extension_c);
-
-    vector<string> names_variables; // Имена переменных
-    names_variables = Read_file(names_variables, path_txt, exp_file_extension_txt);
-
-    bool type = 0; // Проверить текст программы на исключения 
-    Spell_check(text, type);
-
-    type = 1; // Проверить имена переменных на исключения
-    Spell_check(names_variables, type);
-
-    vector<string> found_declared_variables = Find_and_check_variable_declaration(text, names_variables);
-
-    Write_to_file(found_declared_variables, out_path); // Запись в файл
-
+    try
+    {
+        text = Read_file(text, path_c, exp_file_extension_c);
+        names_variables = Read_file(names_variables, path_txt, exp_file_extension_txt);
+        Spell_check(text, type);
+        type = 1; // Проверить имена переменных на исключения
+        Spell_check(names_variables, type);
+        vector<string> found_declared_variables = Find_and_check_variable_declaration(text, names_variables);
+        Write_to_file(found_declared_variables, out_path); // Запись в файл
+    }
+    catch (Exception& exception)
+    {
+        if (exception.getErrorCode() == "1" || exception.getErrorCode() == "2" || exception.getErrorCode() == "3" || exception.getErrorCode() == "4" || exception.getErrorCode() == "5" || exception.getErrorCode() == "6" || exception.getErrorCode() == "7" || exception.getErrorCode() == "8")
+        {
+            cout << exception.what() << exception.getErrorCode();
+            return 0;
+        }
+        else
+        {
+            error_message[0] = error_message[0] + exception.what() + exception.getErrorCode();
+            Write_to_file(error_message, out_path);
+        }
+    }
     return 0;
 }
 
+// Считывание входных данных с C и txt файла по заданному пользователем пути
 vector<string> Read_file(vector<string> text, string path, string exp_file_extension)
 {
 
@@ -56,7 +71,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         // У файла с текстом программы отсутствует расширение
         if (path.find(".c") == string::npos)
         {
-            throw Exception("Отсутствует расширение у файла с текстом программы. Файл должен иметь расширение .c", "1");
+            throw Exception("Отсутствует расширение у файла с текстом программы. Файл должен иметь расширение .c. Код Ошибки: ", "1");
         }
         // Получение расширения файла
         else
@@ -67,7 +82,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         // Было неверно указано расширение файла с текстом программы
         if (exp_file_extension != file_extension)
         {
-            throw Exception("Неверно указано расширение файла с текстом программы. Файл должен иметь расширение .c", "3");
+            throw Exception("Неверно указано расширение файла с текстом программы. Файл должен иметь расширение .c. Код Ошибки: ", "3");
         }
     }
     else if (file_extension == ".txt")
@@ -75,7 +90,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         // У файла с именами переменных отсутствует расширение
         if (path.find(".txt") == string::npos)
         {
-            throw Exception("Отсутствует расширение у файла с именами переменных. Файл должен иметь расширение .txt", "2");
+            throw Exception("Отсутствует расширение у файла с именами переменных. Файл должен иметь расширение .txt. Код Ошибки: ", "2");
         }
         // Получение расширения файла
         else
@@ -86,7 +101,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         // Было неверно указано расширение файла с именами переменных
         if (exp_file_extension != file_extension)
         {
-            throw Exception("Неверно указано расширение файла с именами переменных. Файл должен иметь расширение .txt", "4");
+            throw Exception("Неверно указано расширение файла с именами переменных. Файл должен иметь расширение .txt. Код Ошибки: ", "4");
         }
     }
 
@@ -94,7 +109,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
     ifstream readFile(path);  // Открыть файл для чтения
     if (!readFile.is_open())
     {
-        throw Exception("Неверно указан файл с входными данными. Возможно файл не существует", "5");
+        throw Exception("Неверно указан файл с входными данными. Возможно файл не существует. Код Ошибки: ", "5");
     }
     // Непосредственно считывание данных из файла
     else
