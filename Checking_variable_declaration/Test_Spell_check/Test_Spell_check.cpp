@@ -137,6 +137,28 @@ namespace TestSpellcheck
 			Assert::IsTrue(exp_result == real_result);
 		}
 
+		TEST_METHOD(multiline_comment_in_line)
+		{
+			vector<string> text =
+			{
+				"void func()",
+				"{",
+				"	int tmp = 5;",
+				"   /* Комментарий */"
+				"	bar();",
+				"}",
+				"int main()",
+				"{",
+				"	func()",
+				"	return 0;",
+				"}"
+			};
+			string exp_result = { "15" };
+			string real_result = Get_string_from_func(text, 0);
+
+			Assert::IsTrue(exp_result == real_result);
+		}
+
 		TEST_METHOD(no_text)
 		{
 			vector<string> text =
@@ -161,7 +183,6 @@ namespace TestSpellcheck
 			{
 				string = exception.getErrorCode();
 			}
-			//function = Spell_check(text, type);
 
 			return string;
 		}
