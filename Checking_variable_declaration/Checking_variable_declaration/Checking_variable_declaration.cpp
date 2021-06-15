@@ -1,6 +1,6 @@
 ﻿#include "Prototypes_of_functions.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     SetConsoleCP(1251);       // Установка кодовой страницы win-cp 1251 в поток ввода
     SetConsoleOutputCP(1251); // Установка кодовой страницы win-cp 1251 в поток вывода
@@ -11,39 +11,34 @@ int main()
     string file_extension_txt;  // Расширение файла с именами переменных
     const string exp_file_extension_txt = ".txt"; // Ожидаемое расширение файла с именами переменных
 
-    string path_c;   // Путь до файла с текстом           
-    string path_txt; // Путь до файла с именами переменных 
-    string out_path; // Путь до файла с результатом        
-
     vector<string> text; // Текст программы
     vector<string> names_variables; // Имена переменных
 
-    vector<string> error_message = {""}; // Ошибка, которая запишется в файл
+    vector<string> error_message = { "" }; // Ошибка, которая запишется в файл
 
     bool type = 0; // Проверить текст программы на исключения 
 
-    cout << "Введите путь до файла с расширением .С для считования текста программы: ";
-    cin >> path_c;
-
-    cout << "\nВведите путь до файла с расширением .txt для считования имен переменных: ";
-    cin >> path_txt;
-
-    cout << "\nВведите путь до файла с расширением .txt в который будет записан результа: ";
-    cin >> out_path;
-
     try
     {
-        text = Read_file(text, path_c, exp_file_extension_c);
-        names_variables = Read_file(names_variables, path_txt, exp_file_extension_txt);
-        Spell_check(text, type);
-        type = 1; // Проверить имена переменных на исключения
-        Spell_check(names_variables, type);
-        vector<string> found_declared_variables = Find_and_check_variable_declaration(text, names_variables);
-        Write_to_file(found_declared_variables, out_path); // Запись в файл
+        // Если введено правильное количество путей
+        if (argc == 4)
+        {
+            text = Read_file(text, argv[1], exp_file_extension_c);
+            names_variables = Read_file(names_variables, argv[2], exp_file_extension_txt);
+            Spell_check(text, type);
+            type = 1; // Проверить имена переменных на исключения
+            Spell_check(names_variables, type);
+            vector<string> found_declared_variables = Find_and_check_variable_declaration(text, names_variables);
+            Write_to_file(found_declared_variables, argv[3]); // Запись в файл
+        }
+        else
+        {
+            throw Exception("Отсутствует нужное количество аргументов командной строки. Нужное количество путей равно 4. Код Ошибки: ", "0");
+        }
     }
     catch (Exception& exception)
     {
-        if (exception.getErrorCode() == "1" || exception.getErrorCode() == "2" || exception.getErrorCode() == "3" || exception.getErrorCode() == "4" || exception.getErrorCode() == "5" || exception.getErrorCode() == "6" || exception.getErrorCode() == "7" || exception.getErrorCode() == "8")
+        if (exception.getErrorCode() == "0" || exception.getErrorCode() == "1" || exception.getErrorCode() == "2" || exception.getErrorCode() == "3" || exception.getErrorCode() == "4" || exception.getErrorCode() == "5" || exception.getErrorCode() == "6" || exception.getErrorCode() == "7" || exception.getErrorCode() == "8")
         {
             cout << exception.what() << exception.getErrorCode();
             return 0;
@@ -51,7 +46,7 @@ int main()
         else
         {
             error_message[0] = error_message[0] + exception.what() + exception.getErrorCode();
-            Write_to_file(error_message, out_path);
+            Write_to_file(error_message, argv[3]);
         }
     }
     return 0;
@@ -71,7 +66,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
         // У файла с текстом программы отсутствует расширение
         if (path.find(".c") == string::npos)
         {
-            throw Exception("Отсутствует расширение у файла с текстом программы. Файл должен иметь расширение .c. Код Ошибки: ", "1");
+            throw Exception("Отсутствует правильное расширение у файла с текстом программы. Файл должен иметь расширение .c. Код Ошибки: ", "1");
         }
         // Получение расширения файла
         else
@@ -143,6 +138,12 @@ vector<string> Spell_check(vector<string> text, bool type)
         for (int i = 0; i < size; i++)
         {
             int length = text[i].length();
+
+            if (text[i].find("/*") != -1) // Проверить либо только на русские символы либо на все кроме английских и чисел и посторонних символов
+            {
+                throw Exception("В тексте программы присутствуют многострочные комментарии. Не вводите многострочные комментарии. Код Ошибки: ", "15");
+            }
+
             // Убрать комментарий из строки               
             int position_slash = text[i].find_first_of("/");
             if (position_slash != -1)
@@ -170,12 +171,12 @@ vector<string> Spell_check(vector<string> text, bool type)
                     throw Exception("В тексте программы присутствуют макросы. Не вводите макросы. Код Ошибки: ", "13");
                 }
 
-                if (string_without_comment.find_first_of(rus_letters) != -1)// Проверить либо только на русские символы либо на все кроме английских и чисел и посторонних символов
+                if (string_without_comment.find_first_of(rus_letters) != -1) // Проверить либо только на русские символы либо на все кроме английских и чисел и посторонних символов
                 {
                     throw Exception("Введены недопустимые символы в тексте программы. Используйте латинский алфавит для записи. Код Ошибки: ", "9");
-                }                
+                }       
                               
-                if (string_without_comment.find(59) != -1)// Если в строке обнаржуенно 2 ; то ошибка (Сначала надо обнаружить первую а потом вырезать часть строки до первой ; и проверить еще раз)
+                if (string_without_comment.find(59) != -1) // Если в строке обнаржуенно две ";" 
                 {
                     string_without_comment = string_without_comment.substr(string_without_comment.find(59) + 1); // Строка начинается с символа после первой ";"
 
@@ -187,7 +188,7 @@ vector<string> Spell_check(vector<string> text, bool type)
 
             }
         }
-
+        
         int size = text.size(); // Количество строк в тексте
         int index_close_bracket = 0; // Индекс закрывающейся скобки 
         int index_open_bracket = 0; // Индекс открывающейся скобки 
@@ -540,7 +541,7 @@ void Write_to_file(vector<string> result, string path_out)
     // У файла отсутствует расширение
     if (path_out.find(".txt") == string::npos)
     {
-        throw Exception("Отсутствует расширение у выходного файла", "6");
+        throw Exception("Отсутствует нужное расширение у выходного файла. Код ошибки: ", "6");
     }
     // Получение расширения файла
     else
@@ -551,7 +552,7 @@ void Write_to_file(vector<string> result, string path_out)
     // Было неверно указано расширение файла
     if (exp_file_extension != file_extension)
     {
-        throw Exception("Неверно указано расширение у выходного файла. Выходной файл должен иметь расширение .txt", "7");
+        throw Exception("Неверно указано расширение у выходного файла. Выходной файл должен иметь расширение .txt. Код ошибки: ", "7");
     }
 
     // Запись результата работы программы в файл
@@ -559,7 +560,7 @@ void Write_to_file(vector<string> result, string path_out)
     write_to_file.open(path_out);
     if (!write_to_file.is_open()) // Неверный путь к файлу
     {
-        throw Exception("Неверно указан файл с выходными данными. Возможно файл не существует", "8");
+        throw Exception("Неверно указан файл с выходными данными. Возможно файл не существует. Код ошибки: ", "8");
     }
     // Непосредственно запись результата работы программы в файл
     else
