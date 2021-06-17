@@ -124,5 +124,57 @@ namespace TestFindandcheckvariabledeclar
 
 			Assert::IsTrue(exp_names_variable == real_names_variable);
 		}
+
+		TEST_METHOD(variable_and_function_have_same)
+		{
+			vector<string> names_variable = { "main" };
+			vector<string> text =
+			{
+				"int main()",
+				"{",
+				"	 int main = 0;",
+				"	 return 0;",
+				"}"
+			};
+			vector<string> exp_names_variable = { "main" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(variable_as_argument_of_function_and_function_have_same_name)
+		{
+			vector<string> names_variable = { "main" };
+			vector<string> text =
+			{
+				"int main(int main)",
+				"{",
+				"	 return 0;",
+				"}"
+			};
+			vector<string> exp_names_variable = { "main" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
+
+		TEST_METHOD(variable_as_argument_of_function)
+		{
+			vector<string> names_variable = { "tmp" };
+			vector<string> text =
+			{
+				"int main(int tmp)",
+				"{",
+				"	 return 0;",
+				"}"
+			};
+			vector<string> exp_names_variable = { "tmp" };
+
+			vector<string> real_names_variable = Find_and_check_variable_declaration(text, names_variable);
+
+			Assert::IsTrue(exp_names_variable == real_names_variable);
+		}
 	};
 }

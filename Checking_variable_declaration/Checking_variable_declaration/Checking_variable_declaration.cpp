@@ -378,7 +378,7 @@ string Find_variable(vector<string> text, string name_variable)
 {
     string string_with_variable;      // Полная строка с найденной переменной
 
-    vector<string> symbols = { " ", "*", ";", "=", "[", "(", "+", "-", "{", "\0" }; // Символы, которые могут стоять после переменной
+    vector<string> symbols = { " ", "*", ";", "=", "[", "(", ")", "+", "-", "{", "\0" }; // Символы, которые могут стоять после переменной
 
     int lenth = name_variable.size(); // Длина имени переменной
 
@@ -413,51 +413,54 @@ string Find_variable(vector<string> text, string name_variable)
 
             /// Найти первое вхождение переменной
             int position = string_without_comment.find(variable_with_space);
-            string_starts_variable = string_without_comment.substr(position + 1, lenth); // Строка содержит имя ожидаемой переменной и еще один символ полсе нее
-
-            /// Проверить следующий символ после имени переменной
-            int next_sym_after_variable = name_variable.size();
-            for (int j = 0; j < symbols.size(); j++)
+            if (position != -1)
             {
-                if (string_starts_variable[next_sym_after_variable] == symbols[j][0])
+                string_starts_variable = string_without_comment.substr(position + 1, lenth); // Строка содержит имя ожидаемой переменной и еще один символ полсе нее
+
+                /// Проверить следующий символ после имени переменной
+                int next_sym_after_variable = name_variable.size();
+                for (int j = 0; j < symbols.size(); j++)
                 {
-                    /// Проверить корректность написания переменной
-                    string_starts_variable = string_starts_variable.substr(0, lenth - 1);
-
-                    /// Если переменная корректна
-                    if (string_starts_variable == name_variable)
+                    if (string_starts_variable[next_sym_after_variable] == symbols[j][0])
                     {
-                        /// Проверить не является ли имя переменной - именем функции
-                        /// Узнать индекс последнего символа переменной
-                        int last_position_of_var = string_without_comment.find(name_variable) + string_starts_variable.size();
+                        /// Проверить корректность написания переменной
+                        string_starts_variable = string_starts_variable.substr(0, lenth - 1);
 
-                        /// Узнать позицию открывающейся скобки
-                        int position_of_bracket = string_without_comment.find('(', last_position_of_var);
-
-                        /// Если после имени переменной есть открывающаяся скобка, то это функция                   
-                        if (position_of_bracket == -1)
+                        /// Если переменная корректна
+                        if (string_starts_variable == name_variable)
                         {
-                            /// Записать строку с переменной
-                            string_with_variable = text[i];
-                            its_function = false;
-                        }
-                        else
-                        {
-                            /// Скопировать строку после открывающейся скобки и заново проверить
-                            its_function = true;
-                            string_without_comment = string_without_comment.substr(position_of_bracket);
+                            /// Проверить не является ли имя переменной - именем функции
+                            /// Узнать индекс последнего символа переменной
+                            int last_position_of_var = string_without_comment.find(name_variable) + string_starts_variable.size();
 
-                            /// Снова проверить уже обрезанный участок
-                            goto find_var_again;
+                            /// Узнать позицию открывающейся скобки
+                            int position_of_bracket = string_without_comment.find('(', last_position_of_var);
+
+                            /// Если после имени переменной есть открывающаяся скобка, то это функция                   
+                            if (position_of_bracket == -1)
+                            {
+                                /// Записать строку с переменной
+                                string_with_variable = text[i];
+                                its_function = false;
+                            }
+                            else
+                            {
+                                /// Скопировать строку после открывающейся скобки и заново проверить
+                                its_function = true;
+                                string_without_comment = string_without_comment.substr(position_of_bracket);
+
+                                /// Снова проверить уже обрезанный участок
+                                goto find_var_again;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
-            }
-            /// Если именем переменной не была функция
-            if(its_function == false)
-            {
-                break;
+                /// Если именем переменной не была функция
+                if (its_function == false)
+                {
+                    break;
+                }
             }
         }
     }
