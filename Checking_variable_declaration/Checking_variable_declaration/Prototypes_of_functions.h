@@ -39,24 +39,29 @@ vector<string> Find_and_check_variable_declaration(vector<string> text, vector<s
     \param[in] text - Текст на языке С и имен переменных
     \param[in] type - Текст или имена переменных
 */
-vector<string> Spell_check(vector<string> text, bool type);
+void Spell_check(vector<string> text, bool type);
 
 /*! Считывание входных данных с C и txt файла по заданному пользователем пути
 	\param[in] path - Путь расположения c файла
 	\param[in] file_extension - Расширение файла
-	\param[out] Text - Текст на языке С и названия переменных
 */
 vector<string> Read_file(vector<string> text, string path, string file_extension);
 
 /*! Запись результата выполнения программы в txt файл
 	\param[in] Strings_with_variable - Массив строк содержащий строки с искомой переменной, если они объявлены
 	\param[in] path - Путь для записи
+	\param[out] Text - Считанный текст
 */
 void Write_to_file(vector<string> strings_with_variable, string path);
 
+/*! Класс исключений программы
+    \param[in|out] msg - Сообщение об ошибке
+	\param[in|out] errorCode - Код ошибки
+*/
 class Exception :public exception
 {
 public:
+	/// Исключения и их сообщения
 	Exception(const char* msg, string errorCode) :exception(msg)
 	{
 		this->errorCode = errorCode;
