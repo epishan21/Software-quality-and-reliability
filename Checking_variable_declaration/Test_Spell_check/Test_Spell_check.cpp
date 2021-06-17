@@ -159,6 +159,21 @@ namespace TestSpellcheck
 			Assert::IsTrue(exp_result == real_result);
 		}
 
+		TEST_METHOD(Operator_for_in_line)
+		{
+			vector<string> text =
+			{
+				"int main()",
+				"{",
+				"	for(int i = 0; i < 0; i++)",
+				"	return 0;",
+				"}"
+			};
+			string exp_result = { "" };
+			string real_result = Get_string_from_func(text, 0);
+
+			Assert::IsTrue(exp_result == real_result);
+		}
 		TEST_METHOD(no_text)
 		{
 			vector<string> text =
