@@ -91,7 +91,7 @@ vector<string> Read_file(vector<string> text, string path, string exp_file_exten
             throw Exception("Неверно указано расширение файла с текстом программы. Файл должен иметь расширение .c. Код Ошибки: ", "3");
         }
     }
-    else if (file_extension == ".txt")
+    else if (exp_file_extension == ".txt")
     {
         /// Исключение, если у файла с именами переменных отсутствует расширение
         if (path.find(".txt") == string::npos)
@@ -484,6 +484,7 @@ string Check_declaration(string string_with_variable, string name_variable)
     /// Проверить есть ли любое из слов объявлений перед найденной переменной
     for (int i = 0; i < 9; i++)
     {
+    find_dec_again:
         /// Проверить корректность слова объявления, если нашлось совпадение         
         if (string_with_variable.find(data_type[i]) != -1)
         {
@@ -548,6 +549,14 @@ string Check_declaration(string string_with_variable, string name_variable)
                         /// Записать имя объявленной переменной
                         name_checked_variable = name_variable;
                     }
+                }
+                else
+                {
+                    /// Скопировать строку после первого найденного объвителя
+                    string_with_variable = string_with_variable.substr(position_of_declaration);
+
+                    /// Снова проверить уже обрезанный участок
+                    goto find_dec_again;
                 }
             }
         }
